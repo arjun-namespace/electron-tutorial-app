@@ -34,5 +34,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: electron-tutorial-app
-          path: ./release-builds/electron-tutorial-app
+          path: ./release-builds/electron-tutorial-app.dmg
   
