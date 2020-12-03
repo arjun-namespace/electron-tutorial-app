@@ -1,0 +1,38 @@
+name: Build dmg and deploy staging
+
+on:
+  push:
+    branches:
+      - setup_ci_cd
+
+env:
+  NODE_VERSION: '14.0'
+
+jobs:
+  build-and-deploy:
+    name: Build and deploy
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cache node_modules
+        uses: actions/cache@preview
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: yarn install
+        run: yarn install --check-files
+      - name: Package mac
+        run: yarn package-mac
+      - name: Create mac installer
+        run: yarn create-installer-mac
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Latte-app.dmg
+          path: ./release-builds/Latte-app.dmg
+  
